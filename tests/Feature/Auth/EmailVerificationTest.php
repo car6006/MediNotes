@@ -30,8 +30,13 @@ test('email can be verified', function () {
 
     Event::assertDispatched(Verified::class);
 
-    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    $user->refresh();
+
+    expect($user->hasVerifiedEmail())->toBeTrue();
+    expect($user->onboarding_step)->toBe(1);
+    expect($user->onboarded_at)->toBeNull();
+
+    $response->assertRedirect(route('onboarding.wizard', absolute: false).'?verified=1');
 });
 
 test('email is not verified with invalid hash', function () {

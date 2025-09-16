@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Livewire\Volt\Volt;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -23,4 +24,12 @@ test('new users can register', function () {
         ->assertRedirect(route('dashboard', absolute: false));
 
     $this->assertAuthenticated();
+
+    $user = User::first();
+
+    expect($user)->not->toBeNull();
+    expect($user->onboarding_step)->toBe(1);
+    expect($user->onboarding_state['current_step'] ?? null)->toBe(1);
+    expect($user->onboarding_state['completed'] ?? [])->toBe([]);
+    expect($user->onboarded_at)->toBeNull();
 });

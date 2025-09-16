@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Onboarding;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +24,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'onboarding_step',
+        'onboarding_state',
+        'onboarded_at',
     ];
 
     /**
@@ -45,6 +49,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'onboarding_state' => 'array',
+            'onboarded_at' => 'datetime',
         ];
     }
 
@@ -58,5 +64,44 @@ class User extends Authenticatable implements MustVerifyEmail
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Determine if the user has finished onboarding.
+     */
+    public function hasCompletedOnboarding(): bool
+    {
+        return $this->onboarded_at !== null;
+    }
+
+    /**
+     * Initialize the onboarding state for a newly created user.
+     */
+    public function initializeOnboardingState(): void
+    {
+        if ($this->onboarding_state !== null) {
+            return;
+        }
+
+        $defaultStep = 1;
+
+        $this->forceFill([
+            'onboarding_step' => $defaultStep,
+            'onboarding_state' => [
+                'current_step' => $defaultStep,
+                'completed' => [],
+                'total' => Onboarding::totalSteps(),
+            ],
+        ])->save();
+    }
+
+    /**
+     * Boot the model and configure onboarding defaults.
+     */
+    protected static function booted(): void
+    {
+        static::created(function (self $user): void {
+            $user->initializeOnboardingState();
+        });
     }
 }

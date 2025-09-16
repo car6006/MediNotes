@@ -8,10 +8,14 @@ Route::get('/', function () {
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'onboarding.complete'])
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
+Volt::route('onboarding', 'onboarding.wizard')
+    ->middleware(['auth', 'verified', 'onboarding.incomplete'])
+    ->name('onboarding.wizard');
+
+Route::middleware(['auth', 'verified', 'onboarding.complete'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

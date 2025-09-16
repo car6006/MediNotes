@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Support\Onboarding;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -29,6 +30,13 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'onboarding_step' => 1,
+            'onboarding_state' => [
+                'current_step' => 1,
+                'completed' => [],
+                'total' => Onboarding::totalSteps(),
+            ],
+            'onboarded_at' => null,
         ];
     }
 
@@ -40,5 +48,25 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Mark the user as fully onboarded.
+     */
+    public function withOnboardingCompleted(): static
+    {
+        return $this->state(function (array $attributes) {
+            $total = Onboarding::totalSteps();
+
+            return [
+                'onboarding_step' => $total,
+                'onboarding_state' => [
+                    'current_step' => $total,
+                    'completed' => range(1, $total),
+                    'total' => $total,
+                ],
+                'onboarded_at' => now(),
+            ];
+        });
     }
 }
