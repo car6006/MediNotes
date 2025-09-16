@@ -7,7 +7,7 @@ use Livewire\Volt\Volt;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('password can be updated', function () {
-    $user = User::factory()->create([
+    $user = User::factory()->withOnboardingCompleted()->create([
         'password' => Hash::make('password'),
     ]);
 
@@ -25,7 +25,7 @@ test('password can be updated', function () {
 });
 
 test('correct password must be provided to update password', function () {
-    $user = User::factory()->create([
+    $user = User::factory()->withOnboardingCompleted()->create([
         'password' => Hash::make('password'),
     ]);
 

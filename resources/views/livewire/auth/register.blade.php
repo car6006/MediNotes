@@ -31,6 +31,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Auth::login($user);
 
+        $user->initializeOnboardingState();
+
         $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
     }
 }; ?>

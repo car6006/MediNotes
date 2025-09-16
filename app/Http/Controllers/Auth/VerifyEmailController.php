@@ -13,12 +13,16 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        $user = $request->user();
+
+        if (! $user->hasVerifiedEmail()) {
+            $request->fulfill();
         }
 
-        $request->fulfill();
+        $user->initializeOnboardingState();
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        $destination = $user->hasCompletedOnboarding() ? 'dashboard' : 'onboarding.wizard';
+
+        return redirect()->intended(route($destination, absolute: false).'?verified=1');
     }
 }
