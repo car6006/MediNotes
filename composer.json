@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "herd/medinotes",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "MediNotes - A Laravel project",
     "keywords": [
         "laravel",
-        "framework"
+        "framework",
+        "medinotes"
     ],
     "license": "MIT",
     "require": {
