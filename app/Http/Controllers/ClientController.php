@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Athlete;
+use App\Models\Client;
 use Illuminate\Http\Request;
 
-class AthleteController extends Controller
+class ClientController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class AthleteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Athlete $athlete)
+    public function show(Client $client)
     {
         //
     }
@@ -42,7 +42,7 @@ class AthleteController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Athlete $athlete)
+    public function edit(Client $client)
     {
         //
     }
@@ -50,7 +50,7 @@ class AthleteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Athlete $athlete)
+    public function update(Request $request, Client $client)
     {
         //
     }
@@ -58,7 +58,7 @@ class AthleteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Athlete $athlete)
+    public function destroy(Client $client)
     {
         //
     }
