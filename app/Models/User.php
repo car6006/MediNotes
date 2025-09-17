@@ -102,6 +102,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         static::created(function (self $user): void {
             $user->initializeOnboardingState();
+            // Automatically verify email in local/dev environment
+            if (app()->environment('local')) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
         });
+    }
+
+    /**
+     * Always treat email as verified in local environment.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if (app()->environment('local')) {
+            return true;
+        }
+        return !is_null($this->email_verified_at);
     }
 }
