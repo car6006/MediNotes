@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,6 +18,25 @@ class UserFactory extends Factory
      */
     protected static ?string $password;
 
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $slug = $user->role ?: config('rbac.default_role', 'clinician');
+            $definition = config("rbac.roles.{$slug}", []);
+
+            Role::query()->firstOrCreate(
+                ['slug' => $slug],
+                [
+                    'name' => $definition['name'] ?? Str::headline($slug),
+                    'description' => $definition['description'] ?? null,
+                    'is_system' => (bool) ($definition['is_system'] ?? true),
+                ],
+            );
+
+            $user->assignRole($slug);
+        });
+    }
+
     /**
      * Define the model's default state.
      *
@@ -26,9 +47,12 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'role' => 'clinician',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'is_api_active' => true,
+            'last_api_login_at' => null,
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
@@ -54,6 +78,20 @@ class UserFactory extends Factory
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+        ]);
+    }
+
+    public function viewer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'viewer',
         ]);
     }
 }

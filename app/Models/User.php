@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
+use App\Concerns\HasRolesAndPermissions;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, HasRolesAndPermissions, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +26,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
         'password',
+        'is_api_active',
+        'last_api_login_at',
     ];
 
     /**
@@ -46,6 +53,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_api_active' => 'boolean',
+            'last_api_login_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -60,5 +69,35 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function visits(): HasMany
+    {
+        return $this->hasMany(Visit::class, 'clinician_id');
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
+    public function providerProfile(): HasOne
+    {
+        return $this->hasOne(Provider::class);
+    }
+
+    public function bookedAppointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'booked_by_user_id')->latest('scheduled_for');
+    }
+
+    public function onboardingResponsesSubmitted(): HasMany
+    {
+        return $this->hasMany(OnboardingResponse::class, 'submitted_by_user_id')->latest('submitted_at');
+    }
+
+    public function capturedConsents(): HasMany
+    {
+        return $this->hasMany(PatientConsent::class, 'captured_by_user_id')->latest('accepted_at');
     }
 }
