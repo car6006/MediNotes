@@ -3,8 +3,14 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\BootstrapController;
+use App\Http\Controllers\Api\ClinicalNoteController;
 use App\Http\Controllers\Api\ConsentController;
 use App\Http\Controllers\Api\DictationController;
+use App\Http\Controllers\Api\EncounterAudioController;
+use App\Http\Controllers\Api\EncounterController;
+use App\Http\Controllers\Api\EncounterNoteController;
+use App\Http\Controllers\Api\EncounterTemplateController;
+use App\Http\Controllers\Api\EncounterTranscriptController;
 use App\Http\Controllers\Api\NoteTemplateController;
 use App\Http\Controllers\Api\OnboardingController;
 use App\Http\Controllers\Api\PatientController;
@@ -26,6 +32,7 @@ Route::prefix('v1')->middleware([PreventClinicalApiCaching::class])->group(funct
         Route::get('patients/search', [PatientController::class, 'search']);
         Route::post('patients', [PatientController::class, 'store']);
         Route::get('patients/{patient}/appointments', [AppointmentController::class, 'patientAppointments']);
+        Route::get('patients/{patient}/encounters', [EncounterController::class, 'patientEncounters']);
         Route::get('patients/{patient}/onboarding', [OnboardingController::class, 'patientOnboarding']);
         Route::get('patients/{patient}/consents', [ConsentController::class, 'patientConsents']);
         Route::get('patients/{patient}/summary', [PatientController::class, 'summary']);
@@ -52,10 +59,32 @@ Route::prefix('v1')->middleware([PreventClinicalApiCaching::class])->group(funct
         Route::put('visits/{visitId}', [VisitController::class, 'upsert']);
         Route::patch('visits/{visitId}', [VisitController::class, 'upsert']);
 
+        Route::get('encounters', [EncounterController::class, 'index']);
+        Route::post('encounters', [EncounterController::class, 'store']);
+        Route::get('encounters/{encounter}', [EncounterController::class, 'show']);
+        Route::put('encounters/{encounter}', [EncounterController::class, 'update']);
+        Route::patch('encounters/{encounter}', [EncounterController::class, 'update']);
+        Route::post('encounters/{encounter}/audio', [EncounterAudioController::class, 'store']);
+        Route::get('encounters/{encounter}/transcripts', [EncounterTranscriptController::class, 'index']);
+        Route::post('encounters/{encounter}/transcripts', [EncounterTranscriptController::class, 'store']);
+        Route::post('encounters/{encounter}/notes', [EncounterNoteController::class, 'store']);
+
+        Route::get('notes/{clinicalNote}', [ClinicalNoteController::class, 'show']);
+        Route::put('notes/{clinicalNote}', [ClinicalNoteController::class, 'update']);
+        Route::patch('notes/{clinicalNote}', [ClinicalNoteController::class, 'update']);
+        Route::post('notes/{clinicalNote}/sign', [ClinicalNoteController::class, 'sign']);
+        Route::get('notes/{clinicalNote}/versions', [ClinicalNoteController::class, 'versions']);
+
         Route::get('note-templates', [NoteTemplateController::class, 'index']);
         Route::post('note-templates', [NoteTemplateController::class, 'store']);
         Route::put('note-templates/{templateId}', [NoteTemplateController::class, 'upsert']);
         Route::patch('note-templates/{templateId}', [NoteTemplateController::class, 'upsert']);
+
+        Route::get('encounter-templates', [EncounterTemplateController::class, 'index']);
+        Route::post('encounter-templates', [EncounterTemplateController::class, 'store']);
+        Route::get('encounter-templates/{encounterTemplate}', [EncounterTemplateController::class, 'show']);
+        Route::put('encounter-templates/{encounterTemplate}', [EncounterTemplateController::class, 'update']);
+        Route::patch('encounter-templates/{encounterTemplate}', [EncounterTemplateController::class, 'update']);
 
         Route::post('visits/{visit}/dictations', [DictationController::class, 'store']);
     });

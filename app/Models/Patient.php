@@ -77,6 +77,11 @@ class Patient extends Model
         return $this->hasMany(Visit::class)->latest('started_at');
     }
 
+    public function encounters(): HasMany
+    {
+        return $this->hasMany(Encounter::class)->latest('started_at');
+    }
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class)->latest('scheduled_for');

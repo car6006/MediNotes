@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/router.dart';
+import '../../../encounters/presentation/screens/encounter_list_screen.dart';
 import '../../../appointments/presentation/screens/appointment_list_screen.dart';
 import '../../domain/entities/patient.dart';
 import '../../domain/entities/patient_summary.dart';
@@ -120,6 +121,7 @@ class _PatientRegistryPanelState extends ConsumerState<PatientRegistryPanel> {
                       ref.read(patientsControllerProvider.notifier).refresh(),
                   onCreatePatient: _openNewPatient,
                   onOpenAppointments: _openAppointments,
+                  onOpenEncounters: _openEncounters,
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -226,6 +228,15 @@ class _PatientRegistryPanelState extends ConsumerState<PatientRegistryPanel> {
         )
         .then((_) {});
   }
+
+  Future<void> _openEncounters() {
+    return Navigator.of(context)
+        .pushNamed(
+          AppRouter.encounterList,
+          arguments: const EncounterListRouteArgs(),
+        )
+        .then((_) {});
+  }
 }
 
 class _PatientListAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -248,6 +259,7 @@ class _PatientToolbar extends StatelessWidget {
     required this.onRefresh,
     required this.onCreatePatient,
     required this.onOpenAppointments,
+    required this.onOpenEncounters,
     this.message,
     this.isSaving = false,
   });
@@ -258,6 +270,7 @@ class _PatientToolbar extends StatelessWidget {
   final VoidCallback onRefresh;
   final VoidCallback onCreatePatient;
   final VoidCallback onOpenAppointments;
+  final VoidCallback onOpenEncounters;
   final String? message;
   final bool isSaving;
 
@@ -306,6 +319,11 @@ class _PatientToolbar extends StatelessWidget {
                   onPressed: onOpenAppointments,
                   icon: const Icon(Icons.event_note_outlined),
                   label: const Text('Appointments'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: onOpenEncounters,
+                  icon: const Icon(Icons.medical_information_outlined),
+                  label: const Text('Encounter worklist'),
                 ),
                 FilledButton.tonalIcon(
                   onPressed: isSaving ? null : onCreatePatient,

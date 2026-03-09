@@ -46,6 +46,11 @@ class Clinic extends Model
         return $this->hasMany(Patient::class);
     }
 
+    public function encounters(): HasMany
+    {
+        return $this->hasMany(Encounter::class)->latest('started_at');
+    }
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class)->latest('scheduled_for');
@@ -69,5 +74,10 @@ class Clinic extends Model
     public function patientConsents(): HasMany
     {
         return $this->hasMany(PatientConsent::class)->latest('accepted_at');
+    }
+
+    public function encounterTemplates(): HasMany
+    {
+        return $this->hasMany(EncounterTemplate::class)->latest('updated_at');
     }
 }

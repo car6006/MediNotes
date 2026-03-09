@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/router.dart';
+import '../../../encounters/presentation/screens/encounter_list_screen.dart';
+import '../../../encounters/presentation/screens/start_encounter_screen.dart';
 import '../../../appointments/presentation/screens/appointment_form_screen.dart';
 import '../../../appointments/presentation/screens/appointment_list_screen.dart';
 import '../../../consents/presentation/screens/consent_capture_screen.dart';
@@ -162,7 +164,7 @@ class _PatientWorkflowActions extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Phase 3 workflows',
+              'Clinical workflows',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
@@ -170,6 +172,28 @@ class _PatientWorkflowActions extends StatelessWidget {
               spacing: 12,
               runSpacing: 12,
               children: [
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).pushNamed(
+                    AppRouter.encounterList,
+                    arguments: EncounterListRouteArgs(
+                      patientId: patient.id,
+                      patientName: patient.displayName,
+                    ),
+                  ),
+                  icon: const Icon(Icons.medical_information_outlined),
+                  label: const Text('Encounters'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).pushNamed(
+                    AppRouter.startEncounter,
+                    arguments: StartEncounterRouteArgs(
+                      patientId: patient.id,
+                      patientName: patient.displayName,
+                    ),
+                  ),
+                  icon: const Icon(Icons.playlist_add_check_circle_outlined),
+                  label: const Text('Start encounter'),
+                ),
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).pushNamed(
                     AppRouter.appointmentList,

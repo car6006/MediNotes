@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/router.dart';
 import '../../../consents/presentation/screens/consent_capture_screen.dart';
+import '../../../encounters/presentation/screens/encounter_list_screen.dart';
+import '../../../encounters/presentation/screens/start_encounter_screen.dart';
 import '../../../onboarding/presentation/screens/onboarding_form_screen.dart';
 import '../../domain/entities/appointment.dart';
 import '../controllers/appointments_controller.dart';
@@ -121,6 +123,23 @@ class _AppointmentListScreenState extends ConsumerState<AppointmentListScreen> {
                         return _AppointmentCard(
                           appointment: appointment,
                           onEdit: () => _openEditAppointment(appointment),
+                          onOpenEncounters: () => Navigator.of(context).pushNamed(
+                            AppRouter.encounterList,
+                            arguments: EncounterListRouteArgs(
+                              patientId: appointment.patientId,
+                              patientName: appointment.patientDisplayName,
+                              appointmentId: appointment.id,
+                            ),
+                          ),
+                          onStartEncounter: () => Navigator.of(context).pushNamed(
+                            AppRouter.startEncounter,
+                            arguments: StartEncounterRouteArgs(
+                              patientId: appointment.patientId,
+                              patientName: appointment.patientDisplayName,
+                              appointmentId: appointment.id,
+                              initialChiefComplaint: appointment.reasonForVisit,
+                            ),
+                          ),
                           onOpenOnboarding: widget.patientId == null
                               ? null
                               : () => Navigator.of(context).pushNamed(
@@ -280,12 +299,16 @@ class _AppointmentCard extends StatelessWidget {
   const _AppointmentCard({
     required this.appointment,
     required this.onEdit,
+    required this.onOpenEncounters,
+    required this.onStartEncounter,
     this.onOpenOnboarding,
     this.onOpenConsent,
   });
 
   final Appointment appointment;
   final VoidCallback onEdit;
+  final VoidCallback onOpenEncounters;
+  final VoidCallback onStartEncounter;
   final VoidCallback? onOpenOnboarding;
   final VoidCallback? onOpenConsent;
 
@@ -354,6 +377,16 @@ class _AppointmentCard extends StatelessWidget {
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_calendar_outlined),
                   label: const Text('Edit'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: onStartEncounter,
+                  icon: const Icon(Icons.playlist_add_check_circle_outlined),
+                  label: const Text('Start encounter'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: onOpenEncounters,
+                  icon: const Icon(Icons.medical_information_outlined),
+                  label: const Text('Encounters'),
                 ),
                 if (onOpenOnboarding != null)
                   OutlinedButton.icon(

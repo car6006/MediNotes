@@ -3,6 +3,8 @@
 namespace App\Support;
 
 use App\Models\AuditLog;
+use App\Models\ClinicalNote;
+use App\Models\Encounter;
 use App\Models\Patient;
 use App\Models\User;
 use App\Models\Visit;
@@ -30,6 +32,14 @@ class ClinicalAudit
 
         if ($auditable instanceof Visit) {
             $patientId ??= $auditable->patient_id;
+        }
+
+        if ($auditable instanceof Encounter) {
+            $patientId ??= $auditable->patient_id;
+        }
+
+        if ($auditable instanceof ClinicalNote) {
+            $patientId ??= $auditable->encounter?->patient_id;
         }
 
         AuditLog::query()->create([

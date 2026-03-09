@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(Phase4RbacSeeder::class);
+
         $clinic = Clinic::query()->firstOrCreate([
             'slug' => 'demo-primary-care',
         ], [

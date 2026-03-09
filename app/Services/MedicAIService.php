@@ -73,6 +73,36 @@ class MedicAIService
      * @param  array<string, mixed>  $options
      * @return array<string, mixed>
      */
+    public function suggestSoapSections(array $clinicalContext = [], array $options = []): array
+    {
+        return $this->safeStub('soap_section_suggestion', fn (): array => [
+            'payload' => $this->buildRequestPayload('soap_section_suggestion', $clinicalContext, $options),
+            'status' => 'placeholder',
+            'sections' => [],
+            'message' => 'SOAP section suggestion is scaffolded for a later MedicAI integration.',
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $clinicalContext
+     * @param  array<string, mixed>  $options
+     * @return array<string, mixed>
+     */
+    public function flagSafetyConcerns(array $clinicalContext = [], array $options = []): array
+    {
+        return $this->safeStub('safety_concern_flagging', fn (): array => [
+            'payload' => $this->buildRequestPayload('safety_concern_flagging', $clinicalContext, $options),
+            'status' => 'placeholder',
+            'flags' => [],
+            'message' => 'Safety concern flagging remains a non-clinical placeholder in Phase 4.',
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $clinicalContext
+     * @param  array<string, mixed>  $options
+     * @return array<string, mixed>
+     */
     public function suggestIcd10(array $clinicalContext = [], array $options = []): array
     {
         return $this->safeStub('icd10_suggestion', fn (): array => [
@@ -98,7 +128,7 @@ class MedicAIService
             return [
                 'ok' => true,
                 'operation' => $operation,
-                'mode' => 'phase-1-placeholder',
+                'mode' => 'phase-4-placeholder',
                 ...$callback(),
             ];
         } catch (Throwable $exception) {
@@ -107,7 +137,7 @@ class MedicAIService
             return [
                 'ok' => false,
                 'operation' => $operation,
-                'mode' => 'phase-1-placeholder',
+                'mode' => 'phase-4-placeholder',
                 'message' => 'MedicAI placeholder call failed safely.',
             ];
         }

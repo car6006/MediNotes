@@ -82,4 +82,9 @@ class Appointment extends Model
     {
         return $this->hasMany(PatientConsent::class)->latest('accepted_at');
     }
+
+    public function encounters(): HasMany
+    {
+        return $this->hasMany(Encounter::class)->latest('started_at');
+    }
 }

@@ -54,6 +54,11 @@ class Provider extends Model
         return $this->hasMany(Appointment::class)->latest('scheduled_for');
     }
 
+    public function encounters(): HasMany
+    {
+        return $this->hasMany(Encounter::class)->latest('started_at');
+    }
+
     public function getFullNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

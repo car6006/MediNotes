@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(Visit::class, 'clinician_id');
     }
 
+    public function encounters(): HasMany
+    {
+        return $this->hasMany(Encounter::class, 'clinician_id');
+    }
+
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class);
@@ -99,5 +104,30 @@ class User extends Authenticatable
     public function capturedConsents(): HasMany
     {
         return $this->hasMany(PatientConsent::class, 'captured_by_user_id')->latest('accepted_at');
+    }
+
+    public function uploadedAudioFiles(): HasMany
+    {
+        return $this->hasMany(AudioFile::class, 'uploaded_by_user_id')->latest('captured_at');
+    }
+
+    public function generatedTranscripts(): HasMany
+    {
+        return $this->hasMany(Transcript::class, 'generated_by_user_id')->latest();
+    }
+
+    public function reviewedTranscripts(): HasMany
+    {
+        return $this->hasMany(Transcript::class, 'reviewed_by_user_id')->latest();
+    }
+
+    public function createdClinicalNotes(): HasMany
+    {
+        return $this->hasMany(ClinicalNote::class, 'created_by_user_id')->latest();
+    }
+
+    public function signedClinicalNotes(): HasMany
+    {
+        return $this->hasMany(ClinicalNote::class, 'signed_by_user_id')->latest();
     }
 }
